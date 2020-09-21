@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using MonobitEngine;
 
-public class NetworkControl : MonobitEngine.MonoBehaviour
+public class NetworkControl_ : MonobitEngine.MonoBehaviour
 {
     [SerializeField]
     string serverName = "ServerName";
