@@ -7,21 +7,29 @@ using UnityEngine;
 using UnityEngine.UI;
 //using UnityEngine.UIElements;
 
-public class Dialog : MonoBehaviour
+public class InputDialog : MonoBehaviour
 {
-    Text dialogText;
-    Button button;
+    private Text _dialogText;
+    private Text _inputText;
+    private Button _button;
     Text dialogButtonText;
 
     public string displayText
     {
         set
         {
-            dialogText.text = value;
+            _dialogText.text = value;
         }
         get
         {
-            return dialogText.text;
+            return _dialogText.text;
+        }
+    }
+    public string inputText
+    {
+        get
+        {
+            return _inputText.text;
         }
     }
     public string buttonText
@@ -30,12 +38,12 @@ public class Dialog : MonoBehaviour
         {
             if (value != null)
             {
-                button.gameObject.SetActive(true);
+                _button.gameObject.SetActive(true);
                 dialogButtonText.text = value;
             }
             else
             {
-                button.gameObject.SetActive(false);
+                _button.gameObject.SetActive(false);
             }
         }
         get
@@ -49,30 +57,36 @@ public class Dialog : MonoBehaviour
         {
             if (value != null)
             {
-                button.onClick.AddListener(value);
+                _button.onClick.AddListener(value);
             }
             else
             {
-                button.onClick.RemoveAllListeners();
+                _button.onClick.RemoveAllListeners();
             }
         }
     }
+ 
 
     private void Awake()
     {
         Text[] textChildren = this.gameObject.GetComponentsInChildren<Text>();
-        dialogText = textChildren.First(tr => tr.gameObject.name == "DialogText");
-        if (dialogText == null)
+        _dialogText = textChildren.First(tr => tr.gameObject.name == "DialogText");
+        if (_dialogText == null)
         {
-            Debug.LogError("Dialog is not found");
+            Debug.LogError("DialogText is not found");
+        }
+        _inputText = textChildren.First(tr => tr.gameObject.name == "InputText");
+        if (_inputText == null)
+        {
+            Debug.LogError("InputText is not found");
         }
         Button[] buttonChildren = this.gameObject.GetComponentsInChildren<Button>();
         if (buttonChildren.Length == 0)
         {
             Debug.LogError("Button is not found");
         }
-        button = buttonChildren[0];
-        dialogButtonText = button.gameObject.GetComponentInChildren<Text>();
+        _button = buttonChildren[0];
+        dialogButtonText = _button.gameObject.GetComponentInChildren<Text>();
         if (dialogButtonText == null)
         {
             Debug.LogError("ButtonText is not found");
@@ -84,12 +98,11 @@ public class Dialog : MonoBehaviour
         displayText = message;
         buttonText = buttonLabel;
         buttonAction = action;
-        Debug.Log("Open in Dialog");
     }
 
     public void Close()
     {
-        button.onClick.RemoveAllListeners();
+        _button.onClick.RemoveAllListeners();
         this.gameObject.SetActive(false);
     }
 }

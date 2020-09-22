@@ -12,23 +12,24 @@ public class NetworkController : MonobitEngine.MonoBehaviour
 
     public enum ConnectStep
     {
-        Awake,ServerConnecting,LobbyEntering,RoomSelect,RoomCreating,RoomEntering,RoomEnterd
+        Awake,ServerConnecting,LobbyEntering,NameEntry,RoomSelect,RoomCreating,RoomEntering,RoomEnterd
     }
     private ConnectStep connectStep=ConnectStep.Awake;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine(ConnetSequence());
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
     IEnumerator ConnetSequence()
     {
+        yield return new WaitForEndOfFrame();
+        
         // デフォルトロビーへの自動入室を許可する
         MonobitNetwork.autoJoinLobby = true;
 
@@ -36,28 +37,44 @@ public class NetworkController : MonobitEngine.MonoBehaviour
         MonobitNetwork.ConnectServer(serverName);
         connectStep = ConnectStep.ServerConnecting;
 
-        dialogManager.MessagaButton(serverName + "へ接続します");
-        while(true)
+        dialogManager.DialogButton(serverName + "へ接続します");
+        while (true)
         {
+            yield return new WaitForSeconds(1.0f);
             if (MonobitNetwork.isConnect)
             {
                 connectStep = ConnectStep.LobbyEntering;
                 break;
             }
-            yield return new WaitForSeconds( 1.0f);
         }
-        dialogManager.SendMessage(serverName + "へ接続完了。デフォルトロビーに入ります");
+        
+        dialogManager.SetMessage(serverName + "へ接続完了。\nデフォルトロビーに入ります");       
         while (true)
         {
-            if (MonobitNetwork.)
+            yield return new WaitForSeconds(1.0f);
+            if (MonobitNetwork.inLobby)
             {
-                connectStep = ConnectStep.LobbyEntering;
+                connectStep = ConnectStep.NameEntry;
                 break;
             }
-            yield return new WaitForSeconds(1.0f);
         }
-
-
+        bool onEntered = false;
+        string playerName = "";
+        dialogManager.InputDialog(
+            "デフォルトロビーに入りました。\nプレイヤー名を入力してください",
+            "Enter",
+            ()=> {
+                onEntered = true;
+                playerName = dialogManager.GetInputValue();
+                }
+            );
+        while (!onEntered)
+        {
+            yield return new WaitForSeconds(0.125f);
+        }
+        dialogManager.DialogButton(playerName + "さん、いらっしゃいませ");
+        MonobitNetwork.playerName = playerName;
+        
         yield return null;
 
     }

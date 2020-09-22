@@ -7,7 +7,47 @@ using UnityEngine.UI;
 
 public class DialogManager : MonoBehaviour
 {
-    Dialog dialog;
+    private Dialog dialog;
+    private InputDialog inputDialog;
+    private GameObject currentDialog;
+    enum OpenMode
+    {
+        none, Dialog, InputDialog
+    }
+    OpenMode _openMode = OpenMode.none;
+    OpenMode openMode
+    {
+        set
+        {
+            if (_openMode != value && _openMode != OpenMode.none && currentDialog != null)
+            {
+                currentDialog.SetActive(false);
+            }
+
+            if (value == OpenMode.none)
+            {
+                currentDialog = null;
+            }
+            _openMode = value;
+            switch (value)
+            {
+                case OpenMode.Dialog:
+                    currentDialog = dialog.gameObject;
+                    break;
+                case OpenMode.InputDialog:
+                    currentDialog = inputDialog.gameObject;
+                    break;
+                default:
+                    currentDialog = null;
+                    break;
+            }
+        }
+        get
+        {
+            return _openMode;
+        }
+    }
+
     private void Awake()
     {
         dialog = this.gameObject.GetComponentInChildren<Dialog>();
@@ -15,20 +55,39 @@ public class DialogManager : MonoBehaviour
         {
             Debug.LogError("Dialog is not found");
         }
+        inputDialog = this.gameObject.GetComponentInChildren<InputDialog>();
+        if (inputDialog == null)
+        {
+            Debug.LogError("InputDialog is not found");
+        }
 
     }
     private void Start()
     {
-        //dialog.gameObject.SetActive(false);
+        dialog.gameObject.SetActive(false);
+        inputDialog.gameObject.SetActive(false);
     }
-    public void MessagaButton(string message,string buttonLabel= null, UnityEngine.Events.UnityAction action = null)
+    public void DialogButton(string message, string buttonLabel = null, UnityEngine.Events.UnityAction action = null)
     {
+        openMode = OpenMode.Dialog;
         dialog.gameObject.SetActive(true);
         dialog.Open(message, buttonLabel, action);
+        Debug.Log("DialogButton at DialogManager");
     }
     public void SetMessage(string message)
     {
         dialog.displayText = message;
     }
+    public void InputDialog(string message, string buttonLabel = null, UnityEngine.Events.UnityAction action = null)
+    {
+        openMode = OpenMode.InputDialog;
+        inputDialog.gameObject.SetActive(true);
+        inputDialog.Open(message, buttonLabel, action);
+    }
+    public string GetInputValue()
+    {
+        return inputDialog.inputText;
+    }
+
 
 }
