@@ -72,7 +72,6 @@ public class DialogManager : MonoBehaviour
         openMode = OpenMode.Dialog;
         dialog.gameObject.SetActive(true);
         dialog.Open(message, buttonLabel, action);
-        Debug.Log("DialogButton at DialogManager");
     }
     public void SetMessage(string message)
     {

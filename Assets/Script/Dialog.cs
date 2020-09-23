@@ -84,7 +84,6 @@ public class Dialog : MonoBehaviour
         displayText = message;
         buttonText = buttonLabel;
         buttonAction = action;
-        Debug.Log("Open in Dialog");
     }
 
     public void Close()

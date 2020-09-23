@@ -78,4 +78,8 @@ public class NetworkController : MonobitEngine.MonoBehaviour
         yield return null;
 
     }
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
 }
